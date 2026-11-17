@@ -1,0 +1,115 @@
+/* ================== CONFIG (feel free to edit) ================== */
+const CONFIG = {
+  spinThreshold: { love: 900, hope: 400, joy: 900 },   // minimum score to spin the Prize Wheel
+  prizes: ['🍬 Candy','⭐ Sticker','🔁 Try Again','🍫 Chocolate'],
+  memorySeconds: 60,
+  catchSeconds: 45,
+  quizQuestions: 10,
+  quizSeconds: 12,
+  treeMax: 80,            // max ornaments shown on the tree
+  displayCycleSeconds: 5, // Display Mode: seconds per message
+  idleSeconds: 45,        // Attract Mode starts after this many idle seconds (0 = off)
+  attractSlideSeconds: 6, // Attract Mode: seconds per slide
+};
+// [emoji, label, message] — 8 random pairs are picked every round
+const LOVE_CARDS = [
+  ['🌟','Parol','The parol reminds us of the Star of Bethlehem, a light in the dark.'],
+  ['🎁','Gift','Giving is one of the best ways to show love. 💝'],
+  ['🎄','Christmas Tree','Decorating together makes memories that last! 🎄'],
+  ['🔔','Bells','Church bells call us to Simbang Gabi. 🔔'],
+  ['🕯️','Simbang Gabi','Nine dawn Masses of faith, sacrifice and hope.'],
+  ['🎶','Caroling','Sing with joy and share it with others! 🎶'],
+  ['🤝','Bayanihan','Helping one another: that\'s One PHINMA! 🤝'],
+  ['❤️','Love','Love is the true spirit of Christmas. ❤️'],
+  ['🎅','Santa','Be someone\'s Santa this Christmas! 🎅'],
+  ['⛄','Snowman','Stay cool and kind! ⛄'],
+  ['🍪','Cookies','Share your treats, share your joy! 🍪'],
+  ['☕','Salabat','A warm drink and warm hearts after Simbang Gabi. ☕'],
+  ['👼','Angel','Be an angel to someone who needs help. 👼'],
+  ['🦌','Reindeer','Teamwork makes the sleigh fly! 🦌'],
+  ['🍖','Hamon','Noche Buena is sweeter with family. 🍖'],
+  ['🎀','Ribbon','Wrap your gifts with love. 🎀'],
+  ['🧦','Stocking','Fill someone\'s day with kindness. 🧦'],
+  ['✨','Hope','Hope shines brightest at Christmas. ✨'],
+  ['🙏','Prayer','Pray for one another this season. 🙏'],
+  ['🎉','Joy','Celebrate the joy of being together! 🎉'],
+];
+// [question, [CORRECT answer first, wrong, wrong, wrong], fun fact] — choices are shuffled automatically
+const QUIZ = [
+  // Filipino Christmas
+  ['How many dawn Masses make up Simbang Gabi?',['9','7','12','3'],'Simbang Gabi is a series of 9 dawn Masses from December 16 to 24.'],
+  ['On what date does Simbang Gabi begin?',['December 16','December 1','December 20','December 24'],'Simbang Gabi starts every December 16.'],
+  ['What is another name for Simbang Gabi?',['Misa de Gallo','Misa Cantada','Noche Buena','Panunuluyan'],'Misa de Gallo means "Mass of the Rooster".'],
+  ['Traditionally, what time is Simbang Gabi held?',['Dawn (around 4–5 AM)','Noon','Late afternoon','Midnight of Dec 31'],'Traditional Simbang Gabi Masses are held at dawn.'],
+  ['What does the parol represent?',['The Star of Bethlehem','The moon','The sun','A candle'],'The star-shaped parol represents the Star of Bethlehem.'],
+  ['Which city is known as the "Christmas Capital of the Philippines"?',['San Fernando, Pampanga','Baguio City','Vigan City','Cebu City'],'San Fernando is famous for its Giant Lantern Festival.'],
+  ['Traditional parols were made from bamboo and what material?',['Papel de Japon (Japanese paper)','Plastic','Glass','Steel'],'Bamboo frames and colorful papel de Japon were the classic parol materials.'],
+  ['Which rice cake is cooked in a clay pot lined with banana leaves, with coals above and below?',['Bibingka','Puto Bumbong','Suman','Kutsinta'],'Bibingka is a classic Simbang Gabi treat!'],
+  ['Which purple rice delicacy is traditionally steamed in bamboo tubes?',['Puto Bumbong','Bibingka','Sapin-sapin','Palitaw'],'"Bumbong" refers to the bamboo tube used to steam it.'],
+  ['What gives Puto Bumbong its traditional purple color?',['Pirurutong (purple glutinous rice)','Ube jam','Grape juice','Sweet potato'],'Pirurutong is a naturally purple glutinous rice.'],
+  ['What is Noche Buena?',['The family feast on Christmas Eve','A Christmas song','A dawn Mass','A type of parol'],'Noche Buena is the midnight feast on December 24.'],
+  ['What is Media Noche?',['The New Year\'s Eve feast','A Christmas Eve Mass','A gift exchange','A parol contest'],'Media Noche is the midnight meal welcoming the New Year.'],
+  ['What is "aguinaldo"?',['A Christmas gift or money','A Noche Buena dish','A carol','A tree ornament'],'Kids receive aguinaldo from their ninongs and ninangs!'],
+  ['Who are your "ninong" and "ninang"?',['Your godparents','Your grandparents','Your cousins','Your neighbors'],'Godparents traditionally give aguinaldo at Christmas.'],
+  ['What does a "Belen" show?',['The Nativity scene','The Three Kings only','Santa\'s house','A church'],'The Belen depicts the birth of Jesus in Bethlehem.'],
+  ['What does the "Panunuluyan" reenact?',['Mary and Joseph looking for shelter','The arrival of the Three Kings','The Last Supper','The baptism of Jesus'],'Panunuluyan is usually performed on Christmas Eve.'],
+  ['What is the traditional date of Three Kings\' Day (Epiphany)?',['January 6','December 25','January 1','December 28'],'Three Kings\' Day is traditionally January 6.'],
+  ['How do you say "Merry Christmas" in Cebuano?',['Malipayong Pasko','Naragsak a Paskua','Masayang Pasku','Maligayang Pasko'],'Cebuano: Malipayong Pasko!'],
+  ['How do you say "Merry Christmas" in Ilocano?',['Naragsak a Paskua','Malipayong Pasko','Masayang Pasku','Maligayang Pasko'],'Ilocano: Naragsak a Paskua!'],
+  ['How do you say "Merry Christmas" in Kapampangan?',['Masayang Pasku','Naragsak a Paskua','Malipayong Pasko','Maogmang Pasko'],'Kapampangan: Masayang Pasku!'],
+  ['How do you say "Merry Christmas" in Hiligaynon?',['Malipayon nga Paskwa','Naragsak a Paskua','Masayang Pasku','Maligayang Pasko'],'Hiligaynon: Malipayon nga Paskwa!'],
+  ['The Filipino word "Pasko" comes from which Spanish word?',['Pascua','Paseo','Pastel','Paso'],'"Pascua" is Spanish for Easter/Christmas feast.'],
+  ['What is Queso de Bola?',['Edam cheese','Cheddar cheese','Kesong puti','Cream cheese'],'Queso de bola is Edam cheese with a red wax coating.'],
+  ['What is "hamon" on the Noche Buena table?',['Christmas ham','Rice cake','Fruit salad','Spaghetti'],'Hamon is the sweet-glazed Christmas ham.'],
+  ['What is "lechon"?',['Whole roasted pig','Grilled fish','Fried chicken','Beef stew'],'Lechon is the star of many Filipino celebrations.'],
+  ['What is salabat?',['Ginger tea','Hot chocolate','Coffee','Lemongrass juice'],'Salabat is warm ginger tea, perfect after Simbang Gabi.'],
+  ['What is the Filipino name for a Kris Kringle gift exchange?',['Monito-Monita','Aguinaldo','Pamasko','Noche Buena'],'Monito-Monita: guess who your gift giver is!'],
+  ['What do Filipino kids usually say when caroling house to house?',['"Namamasko po!"','"Salamat po!"','"Tao po!"','"Paalam po!"'],'"Namamasko po!" means they\'re asking for a Christmas blessing.'],
+  ['In the Philippines, the Christmas season unofficially starts in which month?',['September','November','December','October'],'The "-ber" months mean Christmas is coming!'],
+  ['Which Jose Mari Chan song is famous every "-ber" month?',['Christmas in Our Hearts','Ang Pasko ay Sumapit','Pasko na Sinta Ko','Sana Ngayong Pasko'],'"Christmas in Our Hearts" is a Filipino holiday staple.'],
+  ['"Ang Pasko ay Sumapit" is based on which Cebuano song?',['Kasadya Ning Taknaa','Matud Nila','Rosas Pandan','Usahay'],'"Kasadya Ning Taknaa" is the original Cebuano carol.'],
+  ['Which dessert is made mainly of egg yolks, condensed milk and caramelized sugar?',['Leche flan','Buko pandan','Maja blanca','Halo-halo'],'Leche flan is a Noche Buena favorite!'],
+  ['Many Filipino families prepare how many round fruits for New Year\'s Eve?',['12','7','10','3'],'Round fruits symbolize prosperity, one for each month.'],
+  ['The Filipino word "kutitap" describes what?',['Twinkling lights','Falling snow','Ringing bells','Wrapped gifts'],'"Kumukutitap" means twinkling!'],
+  ['What is a "Pamaskong Handog"?',['A Christmas gift given to others','A New Year firework','A church choir','A Christmas tree'],'"Pamaskong handog" means a Christmas offering or gift.'],
+  // Christmas around the world
+  ['In which town was Jesus born?',['Bethlehem','Nazareth','Jerusalem','Rome'],'Jesus was born in Bethlehem.'],
+  ['The gifts of the Magi were gold, frankincense and what?',['Myrrh','Silver','Pearls','Silk'],'Gold, frankincense and myrrh!'],
+  ['How many Sundays are there in Advent?',['4','3','5','7'],'Advent has 4 Sundays before Christmas.'],
+  ['The pink candle on the Advent wreath (3rd Sunday) stands for what?',['Joy','Fear','Sadness','Rest'],'The 3rd Sunday of Advent is Gaudete (Rejoice) Sunday.'],
+  ['Which country is credited with starting the Christmas tree tradition?',['Germany','USA','Philippines','Japan'],'Decorated Christmas trees became popular in Germany.'],
+  ['"Silent Night" was originally written in which language?',['German','English','Latin','French'],'"Stille Nacht" was first performed in Austria in 1818.'],
+  ['"Feliz Navidad" means "Merry Christmas" in which language?',['Spanish','Italian','Portuguese','French'],'Feliz Navidad!'],
+  ['"Joyeux Noël" means "Merry Christmas" in which language?',['French','Spanish','German','Dutch'],'Joyeux Noël!'],
+  ['Which of Santa\'s reindeer has a red, shiny nose?',['Rudolph','Dasher','Comet','Blitzen'],'Rudolph leads the sleigh!'],
+  ['How many reindeer pull Santa\'s sleigh, including Rudolph?',['9','8','6','12'],'8 reindeer plus Rudolph = 9.'],
+  ['Where does Santa Claus live?',['North Pole','South Pole','Iceland','Bethlehem'],'Santa\'s workshop is at the North Pole.'],
+  ['In "The Twelve Days of Christmas," what is given on the first day?',['A partridge in a pear tree','Two turtle doves','Five golden rings','Three French hens'],'A partridge in a pear tree!'],
+  ['Who sings "All I Want for Christmas Is You"?',['Mariah Carey','Taylor Swift','Ariana Grande','Celine Dion'],'Released in 1994, it\'s still a holiday hit!'],
+  ['Which group sang "Last Christmas"?',['Wham!','Backstreet Boys','ABBA','The Beatles'],'"Last Christmas" by Wham! came out in 1984.'],
+  ['Who wrote "A Christmas Carol"?',['Charles Dickens','William Shakespeare','Mark Twain','J.K. Rowling'],'Charles Dickens published it in 1843.'],
+  ['What is Scrooge\'s first name in "A Christmas Carol"?',['Ebenezer','Ezekiel','Edward','Elijah'],'Ebenezer Scrooge learns the true meaning of Christmas.'],
+  ['Which Dr. Seuss character "stole Christmas"?',['The Grinch','The Cat in the Hat','The Lorax','Horton'],'"How the Grinch Stole Christmas!"'],
+  ['What is the name of the boy left behind in "Home Alone"?',['Kevin','Kenny','Kyle','Calvin'],'Kevin McCallister!'],
+  ['Who composed the music for the ballet "The Nutcracker"?',['Tchaikovsky','Mozart','Beethoven','Bach'],'Pyotr Ilyich Tchaikovsky composed it in 1892.'],
+  ['How many sides or points does a snowflake usually have?',['6','5','8','4'],'Snowflakes usually have six-fold symmetry.'],
+  ['What are the traditional colors of Christmas?',['Red and green','Blue and orange','Purple and yellow','Black and white'],'Red and green, plus a touch of gold!'],
+  ['What did Frosty the Snowman have for a nose?',['A button','A carrot','A pebble','A cherry'],'"With a corncob pipe and a button nose..."'],
+  ['In the movie "Elf," who plays Buddy?',['Will Ferrell','Jim Carrey','Adam Sandler','Tom Hanks'],'Will Ferrell played Buddy the Elf.'],
+  ['What plant do people traditionally kiss under at Christmas?',['Mistletoe','Holly','Poinsettia','Pine'],'Kissing under the mistletoe is an old tradition.'],
+  ['Which red flower is a popular Christmas plant?',['Poinsettia','Rose','Sunflower','Sampaguita'],'Poinsettias are called "Christmas flowers".'],
+  // Values & theme
+  ['What are the three values of our Paskuhan theme?',['Love, Hope & Joy','Faith, Peace & Unity','Joy, Gifts & Lights','Love, Peace & Light'],'One PHINMA: Love, Hope & Joy! 💚'],
+  ['What does "bayanihan" mean?',['Helping one another as a community','Singing carols','Eating together','Giving gifts'],'Bayanihan is the Filipino spirit of community.'],
+  ['Which action best shows LOVE this Christmas?',['Sharing with someone in need','Keeping all the gifts','Ignoring classmates','Skipping family dinner'],'Love shows in how we share.'],
+  ['Which action best shows HOPE?',['Encouraging a friend who is struggling','Giving up on your goals','Spreading rumors','Laughing at mistakes'],'A kind word can give someone hope.'],
+  ['Which action best spreads JOY?',['Making someone smile with kindness','Complaining all day','Leaving others out','Breaking a promise'],'Joy multiplies when shared!'],
+];
+const GAME_INFO = {
+  love:{name:'Heart of Christmas',msg:'"Love is not measured by the gifts we give, but by how we care for one another." Thank you for sharing the love, North Stars! 💞'},
+  hope:{name:'Catch a Star',msg:'"Like a parol, may we be a light of hope to others." Keep shining this school year! 🌟'},
+  joy:{name:'Joy Quiz Bee',msg:'"Joy is sweeter when it is shared." Merry Christmas! 🎶'},
+};
+// Ornament designs for the Christmas Tree (ball:<color> or an emoji)
+const ORNAMENTS = ['ball:red','ball:gold','ball:blue','ball:silver','❤️','⭐','🔔','🎁','👼','⛄'];
+/* =============================================================== */

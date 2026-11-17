@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Association of Computing Students Booth Games · One PHINMA: Love, Hope & Joy</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="snow"></canvas>
+<div class="app">
+  <header>
+    <h1>Association of Computing Students Booth <small>One PHINMA: Love, Hope &amp; Joy</small></h1>
+    <div class="tools">
+      <button class="icon-btn" id="musicBtn" title="Background music on/off">🎵</button>
+      <button class="icon-btn" id="sfxBtn" title="Sound effects on/off">🔊</button>
+      <button class="icon-btn" onclick="toggleFS()" title="Fullscreen">🖥️</button>
+      <button class="icon-btn" onclick="go('home')" title="Home (Esc)">🏠</button>
+    </div>
+  </header>
+  <div class="lights" id="lights"></div>
+  <main>
+    <!-- HOME -->
+    <section class="screen active" id="home">
+      <h2>Merry Christmas, North Stars!</h2>
+      <p class="sub">Type your name, pick a game, and play for <b>Love</b>, <b>Hope</b> and <b>Joy</b>! Reach the target score to spin the Prize Wheel.</p>
+      <div class="name-row">
+        <input type="text" id="playerName" maxlength="20" placeholder="Your Name and Section">
+      </div>
+      <div class="grid">
+        <div class="gcard love" onclick="startGame('love')"><div class="big">💞</div><span class="tag">LOVE</span><h3>Heart of Christmas</h3><p>Match pairs of Christmas symbols in 60 seconds!</p></div>
+        <div class="gcard hope" onclick="startGame('hope')"><div class="big">🌟</div><span class="tag">HOPE</span><h3>Catch a Star</h3><p>Catch falling stars to light up the parol. Dodge the storms! ⛈️</p></div>
+        <div class="gcard joy" onclick="startGame('joy')"><div class="big">🎶</div><span class="tag">JOY</span><h3>Joy Quiz Bee</h3><p>10 Christmas trivia questions. Answer fast for bonus points!</p></div>
+      </div>
+      <div class="grid" style="margin-top:4px">
+        <div class="gcard extra" onclick="go('wheel')"><div class="big">🎡</div><span class="tag">PRIZES</span><h3>Prize Wheel</h3><p>For winners who reach the target score.</p></div>
+        <div class="gcard extra" onclick="go('tree')"><div class="big">🎄</div><span class="tag">WISH TREE</span><h3>Christmas Tree of Wishes</h3><p>Pick an ornament, write your name and message, and hang it on the tree!</p></div>
+        <div class="gcard extra" onclick="go('board')"><div class="big">🏆</div><span class="tag">RANKING</span><h3>Leaderboard</h3><p>Top 10 players of each game.</p></div>
+      </div>
+    </section>
+
+    <!-- LOVE -->
+    <section class="screen" id="love">
+      <h2>💞 Heart of Christmas</h2>
+      <div class="hud"><div>⏱️ <span id="memTime">60</span>s</div><div>💖 Pairs: <span id="memPairs">0</span>/8</div><div>🎯 Score: <span id="memScore">0</span></div></div>
+      <div id="memGrid"></div>
+    </section>
+
+    <!-- HOPE -->
+    <section class="screen" id="hope">
+      <h2>🌟 Catch a Star</h2>
+      <div class="hud"><div>⏱️ <span id="catTime">45</span>s</div><div>⭐ Score: <span id="catScore">0</span></div><div>❤️ Lives: <span id="catLives">3</span></div></div>
+      <div id="catchWrap">
+        <canvas id="catchCanvas"></canvas>
+        <div class="overlay" id="catchOverlay">
+          <div style="font-size:60px">🧺</div>
+          <div>Move your mouse / finger (or ← → keys) to catch the stars.</div>
+          <div>⭐ +10 &nbsp; 🌟 +30 &nbsp; ❤️ +20 &nbsp; ⛈️ = lose a life</div>
+          <button class="btn" onclick="catchBegin()">START!</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOY -->
+    <section class="screen" id="joy">
+      <h2>🎶 Joy Quiz Bee</h2>
+      <div class="hud"><div>🎯 Score: <span id="qScore">0</span></div></div>
+      <div class="qbox">
+        <div class="qnum" id="qNum"></div>
+        <div class="timer"><div id="qTimer"></div></div>
+        <div class="qtext" id="qText"></div>
+        <div class="choices" id="qChoices"></div>
+        <div class="fact" id="qFact"></div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section class="screen" id="result">
+      <h2 id="resTitle">Game Over!</h2>
+      <div id="resName" class="sub"></div>
+      <div class="result-big" id="resScore">0</div>
+      <div id="resRank" class="sub"></div>
+      <div class="msg" id="resMsg"></div>
+      <div class="row" id="resBtns"></div>
+    </section>
+
+    <!-- WHEEL -->
+    <section class="screen" id="wheel">
+      <h2>🎡 Prize Wheel</h2>
+      <div id="wheelWrap"><div id="pointer"></div><canvas id="wheelCanvas"></canvas></div>
+      <div id="prize"></div>
+      <div class="row"><button class="btn" id="spinBtn" onclick="spin()">SPIN!</button><button class="btn sec" onclick="go('home')">Home</button></div>
+    </section>
+
+    <!-- CHRISTMAS TREE -->
+    <section class="screen" id="tree">
+      <h2 id="treeTitle">🎄 Christmas Tree of Wishes</h2>
+      <div class="tree-layout">
+        <div class="tree-form">
+          <label>1. Pick your ornament</label>
+          <div class="designs" id="designPick"></div>
+          <label>2. Pick a value</label>
+          <div class="vals" id="valPick">
+            <button data-v="love" style="background:var(--love)">💞 Love</button>
+            <button data-v="hope" style="background:var(--hope);color:#222">🌟 Hope</button>
+            <button data-v="joy" style="background:var(--joy)">🎶 Joy</button>
+          </div>
+          <label for="treeName">3. Your name</label>
+          <input type="text" id="treeName" maxlength="24" placeholder="e.g. Juan, BSCS 3A">
+          <label for="treeMsg">4. Your Christmas message / wish</label>
+          <textarea id="treeMsg" maxlength="100" placeholder="e.g. Wishing everyone good health and a joyful Christmas!"></textarea>
+          <div class="counter"><span id="msgCount">0</span>/100</div>
+          <button class="btn" onclick="hangOrnament()">🎄 Hang it on the Tree!</button>
+          <div class="row" style="justify-content:space-between">
+            <button class="btn sec" style="font-size:15px;padding:8px 14px" onclick="toggleDisplay()">📺 Display Mode</button>
+            <button class="btn red" style="font-size:15px;padding:8px 14px" onclick="resetTree()">Reset</button>
+          </div>
+        </div>
+        <div class="tree-area">
+          <div id="treeBox"></div>
+          <div class="tree-stats" id="treeStats"></div>
+          <div class="caption" id="treeCaption"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADERBOARD -->
+    <section class="screen" id="board">
+      <h2>🏆 Leaderboard</h2>
+      <div class="lbgrid" id="lbGrid"></div>
+      <div class="row"><button class="btn sec" onclick="go('home')">Home</button><button class="btn red" onclick="resetBoard()">Reset</button></div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<div id="attract"><div class="lights" id="attLights"></div><div class="brand">Association of Computing Students Booth · ONE PHINMA: LOVE, HOPE &amp; JOY</div><div id="attSlide"></div><div class="att-tap">TAP ANYWHERE TO PLAY!</div><div class="att-dots" id="attDots"></div></div>
+<div class="modal" id="ornModal" onclick="this.classList.remove('show')"><div class="box" id="ornBox"></div></div>
+
+<script src="js/config.js"></script>
+<script src="js/core.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/leaderboard.js"></script>
+<script src="js/game-love-memory.js"></script>
+<script src="js/game-hope-catch.js"></script>
+<script src="js/game-joy-quiz.js"></script>
+<script src="js/prize-wheel.js"></script>
+<script src="js/wish-tree.js"></script>
+<script src="js/attract-mode.js"></script>
+</body>
+</html>
